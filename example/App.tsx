@@ -1,11 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from "react-native";
 
-import * as ExpoAr from 'expo-ar';
+import { ExpoArView } from "expo-ar";
+
+import { Dimensions } from "react-native";
+
+const d = Dimensions.get("screen");
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>{ExpoAr.hello()}</Text>
+      <ExpoArView name="DARSHAN" style={{ width: d.width, height: d.height }} />
     </View>
   );
 }
@@ -13,8 +17,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
   },
 });
