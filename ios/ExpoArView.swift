@@ -12,10 +12,45 @@ class ExpoArView: ExpoView {
         
         clipsToBounds = true
         sceneView = SCNView(frame: self.bounds)
+        scene = SCNScene()
         sceneView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.addSubview(sceneView)
         setupScene()
     }
+    
+    
+    func loadObjModel(url: URL) -> SCNNode? {
+            guard let objScene = try? SCNScene(url: url, options: nil) else {
+                print("Error loading .obj file.")
+                return nil
+            }
+
+            let objNode = SCNNode()
+            for childNode in objScene.rootNode.childNodes {
+                
+                let texture = UIImage(named: "texture.png")
+                let texture2 = UIImage(named: "texture2.png")
+                let texture3 = UIImage(named: "texture3.png")
+                let texture4 = UIImage(named: "texture4.png")
+                
+                let material = SCNMaterial()
+                material.diffuse.contents = texture
+                
+                let material2 = SCNMaterial()
+                material2.diffuse.contents = texture2
+                
+                let material3 = SCNMaterial()
+                material3.diffuse.contents = texture3
+                
+                let material4 = SCNMaterial()
+                material4.diffuse.contents = texture4
+                
+                childNode.geometry?.materials = [material, material3, material2, material4]
+             objNode.addChildNode(childNode)
+            }
+
+            return objNode
+        }
     
     func setupScene() {
        // Create a camera
@@ -24,40 +59,36 @@ class ExpoArView: ExpoView {
        // Set the camera's position
        let cameraNode = SCNNode()
        cameraNode.camera = camera
-       cameraNode.position = SCNVector3(x: 0, y: 0, z: 1.5)
+       cameraNode.position = SCNVector3(x: 0, y: 0, z: 20)
        
+        
        
        let perspective = SCNCameraController()
        perspective.pointOfView = cameraNode
         // perspective.projectionTransform = SCNMatrix4MakePerspective(.pi/4, Float(UIScreen.main.bounds.width / UIScreen.main.bounds.height), 0.1, 100)
 
+       
       
+        if let objURL = Bundle.main.url(forResource: "Pikachu", withExtension: "obj"),
+            let objNode = loadObjModel(url: objURL) {
+            scene.rootNode.addChildNode(objNode)
             
-           let redMaterial = SCNMaterial()
-          redMaterial.diffuse.contents = UIColor.red;
-       
-       
-            let cubeGeometry = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0.0)
-            let cubeNode = SCNNode(geometry: cubeGeometry)
-       
-             cubeNode.geometry?.materials = [redMaterial]
-            cubeNode.position = SCNVector3(0.0, 0.0, -0.5)
-         
-       // rotation logic
-       
-       // Create an action to rotate the cube
-       let rotateAction = SCNAction.rotate(by: .pi, around: SCNVector3(x: 1, y: 1, z: 1), duration: 2)
-
-       // Create a repeating action to continuously rotate the cube
-       let repeatAction = SCNAction.repeatForever(rotateAction)
-
-       // Apply the repeating rotation action to the cube's node
-       cubeNode.runAction(repeatAction)
-            scene = SCNScene()
-            scene.rootNode.addChildNode(cubeNode)
-            sceneView.scene = scene
-             // Add the camera to the scene's point of view
-           sceneView.pointOfView = cameraNode
-
+            let rotateAction = SCNAction.rotate(by: .pi, around: SCNVector3(x: 0, y: 1, z: 0), duration: 2)
+            
+            let repeatAction = SCNAction.repeatForever(rotateAction)
+            
+            objNode.runAction(repeatAction)
         }
+        
+        
+        
+       
+         
+        
+       
+        sceneView.scene = scene
+         // Add the camera to the scene's point of view
+       sceneView.pointOfView = cameraNode
+         
+    }
 }
